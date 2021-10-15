@@ -24,6 +24,8 @@ namespace Photon.Pun.Demo.Asteroids
         public float MaxSpeed = 0.2f;
 
         public ParticleSystem Destruction;
+        public ParticleSystem Destruction2;
+
         public GameObject EngineTrail;
         public GameObject BulletPrefab;
 
