@@ -24,7 +24,6 @@ namespace Photon.Pun.Demo.Asteroids
         public float MaxSpeed = 0.2f;
 
         public ParticleSystem Destruction;
-        public ParticleSystem Destruction2;
 
         public GameObject EngineTrail;
         public GameObject BulletPrefab;
@@ -115,6 +114,22 @@ namespace Photon.Pun.Demo.Asteroids
             }
 
             CheckExitScreen();
+        }
+
+        public void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.CompareTag("Bullet"))
+            {
+                if (photonView.IsMine)
+                {
+                    Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+
+                    if (bullet.Owner != photonView.Owner)
+                    {
+                        gameObject.GetComponent<PhotonView>().RPC("DestroySpaceship", RpcTarget.All);
+                    }
+                }
+            }
         }
 
         #endregion
