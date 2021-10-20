@@ -84,7 +84,6 @@ namespace Photon.Pun.Demo.Asteroids
                 if (photonView.IsMine)
                 {
                     collision.gameObject.GetComponent<PhotonView>().RPC("DestroySpaceship", RpcTarget.All);
-
                     DestroyAsteroidGlobally();
                 }
             }

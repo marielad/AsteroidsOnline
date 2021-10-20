@@ -27,6 +27,9 @@ namespace Photon.Pun.Demo.Asteroids
 
         public GameObject EngineTrail;
         public GameObject BulletPrefab;
+        public GameObject BombPrefab;
+        public ParticleSystem BombParticles;
+
 
         private PhotonView photonView;
 
@@ -39,6 +42,7 @@ namespace Photon.Pun.Demo.Asteroids
         private float rotation = 0.0f;
         private float acceleration = 0.0f;
         private float shootingTimer = 0.0f;
+        private float bombTimer = 2.0f;
 
         private bool controllable = true;
 
@@ -79,7 +83,7 @@ namespace Photon.Pun.Demo.Asteroids
 
             if (Input.GetButton("Jump") && shootingTimer <= 0.0)
             {
-                shootingTimer = 0.2f;
+                shootingTimer = 2f;
 
                 photonView.RPC("Fire", RpcTarget.AllViaServer, rigidbody.position, rigidbody.rotation);
             }
@@ -88,6 +92,19 @@ namespace Photon.Pun.Demo.Asteroids
             {
                 shootingTimer -= Time.deltaTime;
             }
+
+            if (Input.GetButton("Bomb") && bombTimer <= 0.0)
+            {
+                bombTimer = 0.2f;
+
+                photonView.RPC("CreateBomb", RpcTarget.AllViaServer, rigidbody.position, rigidbody.rotation);
+            }
+
+            if (bombTimer > 0.0f)
+            {
+                bombTimer -= Time.deltaTime;
+            }
+            
         }
 
         public void FixedUpdate()
@@ -198,6 +215,16 @@ namespace Photon.Pun.Demo.Asteroids
             //bullet.GetComponent<Bullet>().InitializeBullet(photonView.Owner, baseZ, Mathf.Abs(lag));
             //bullet = Instantiate(BulletPrefab, rigidbody.position + offsetRight, Quaternion.identity) as GameObject;
             //bullet.GetComponent<Bullet>().InitializeBullet(photonView.Owner, baseZ, Mathf.Abs(lag));
+        }
+
+        [PunRPC]
+        public void CreateBomb(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
+        {
+            float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+
+            GameObject bomb;
+            bomb = Instantiate(BombPrefab, position, Quaternion.identity) as GameObject;
+            bomb.GetComponent<Bullet>().InitializeBullet(photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
         }
 
         [PunRPC]
