@@ -27,11 +27,8 @@ namespace Photon.Pun.Demo.Asteroids
 
         public GameObject EngineTrail;
         public GameObject BulletPrefab;
-        public GameObject BombPrefab;
-        public ParticleSystem BombParticles;
 
-
-        private PhotonView photonView;
+        public PhotonView photonView;
 
 #pragma warning disable 0109
         private new Rigidbody rigidbody;
@@ -42,7 +39,10 @@ namespace Photon.Pun.Demo.Asteroids
         private float rotation = 0.0f;
         private float acceleration = 0.0f;
         private float shootingTimer = 0.0f;
-        private float bombTimer = 2.0f;
+
+        private Vector3 bombPos = Vector3.zero;
+        private float newBombTimer = AsteroidsGame.BOMB_SPAWN_TIME;
+        private float despawnBombTimer = 0.0f;
 
         private bool controllable = true;
 
@@ -83,7 +83,7 @@ namespace Photon.Pun.Demo.Asteroids
 
             if (Input.GetButton("Jump") && shootingTimer <= 0.0)
             {
-                shootingTimer = 2f;
+                shootingTimer = 0.2f;
 
                 photonView.RPC("Fire", RpcTarget.AllViaServer, rigidbody.position, rigidbody.rotation);
             }
@@ -93,18 +93,28 @@ namespace Photon.Pun.Demo.Asteroids
                 shootingTimer -= Time.deltaTime;
             }
 
-            if (Input.GetButton("Bomb") && bombTimer <= 0.0)
+            if (Input.GetButton("Bomb"))
             {
-                bombTimer = 0.2f;
+                newBombTimer = AsteroidsGame.BOMB_SPAWN_TIME;
 
-                photonView.RPC("CreateBomb", RpcTarget.AllViaServer, rigidbody.position, rigidbody.rotation);
+                photonView.RPC("CreateBomb", RpcTarget.AllViaServer, rigidbody.rotation);
             }
 
-            if (bombTimer > 0.0f)
+            if (newBombTimer <= 0.0)
             {
-                bombTimer -= Time.deltaTime;
+                newBombTimer = AsteroidsGame.BOMB_SPAWN_TIME;
+
+                photonView.RPC("CreateTimeBomb", RpcTarget.AllViaServer, rigidbody.rotation);
             }
-            
+
+            if (newBombTimer > 0.0f)
+            {
+                newBombTimer -= Time.deltaTime;
+            }
+            if (despawnBombTimer > 0.0f)
+            {
+                despawnBombTimer -= Time.deltaTime;
+            }
         }
 
         public void FixedUpdate()
@@ -143,12 +153,14 @@ namespace Photon.Pun.Demo.Asteroids
 
                     if (bullet.Owner != photonView.Owner)
                     {
+                        bullet.Owner.AddScore(5);
                         gameObject.GetComponent<PhotonView>().RPC("DestroySpaceship", RpcTarget.All);
                     }
                 }
             }
         }
 
+       
         #endregion
 
         #region COROUTINES
@@ -218,13 +230,37 @@ namespace Photon.Pun.Demo.Asteroids
         }
 
         [PunRPC]
-        public void CreateBomb(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
+        public void CreateBomb(Quaternion rotation, PhotonMessageInfo info)
         {
-            float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+            Debug.Log("CREAR BOMBA -------------------------------------------------------------------------");
+            if (photonView.Owner.IsMasterClient && despawnBombTimer <= 0)
+            {
+                despawnBombTimer = AsteroidsGame.BOMB_DESPAWN_TIME;
+                float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
 
-            GameObject bomb;
-            bomb = Instantiate(BombPrefab, position, Quaternion.identity) as GameObject;
-            bomb.GetComponent<Bullet>().InitializeBullet(photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
+                float cameraSizeX = Camera.main.orthographicSize * Camera.main.aspect;
+                float cameraSizeY = Camera.main.orthographicSize;
+                bombPos = new Vector3(Random.Range(-cameraSizeX, cameraSizeX), 0, Random.Range(-cameraSizeY, cameraSizeY));
+
+                PhotonNetwork.InstantiateRoomObject("Bomb", bombPos, Quaternion.identity, 0, null);
+            }
+        }
+
+        [PunRPC]
+        public void CreateTimeBomb(Quaternion rotation, PhotonMessageInfo info)
+        {
+            Debug.Log("CREAR BOMBA -------------------------------------------------------------------------");
+            if (despawnBombTimer <= 0)
+            {
+                despawnBombTimer = AsteroidsGame.BOMB_DESPAWN_TIME;
+                float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+
+                float cameraSizeX = Camera.main.orthographicSize * Camera.main.aspect;
+                float cameraSizeY = Camera.main.orthographicSize;
+                bombPos = new Vector3(Random.Range(-cameraSizeX, cameraSizeX), 0, Random.Range(-cameraSizeY, cameraSizeY));
+
+                PhotonNetwork.InstantiateRoomObject("Bomb", bombPos, Quaternion.identity, 0, null);
+            }
         }
 
         [PunRPC]

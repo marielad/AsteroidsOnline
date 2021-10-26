@@ -7,6 +7,9 @@ namespace Photon.Pun.Demo.Asteroids
         public const float ASTEROIDS_MIN_SPAWN_TIME = 5.0f;
         public const float ASTEROIDS_MAX_SPAWN_TIME = 10.0f;
 
+        public const float BOMB_SPAWN_TIME = 10.0f;
+        public const float BOMB_DESPAWN_TIME = BOMB_SPAWN_TIME/2;
+
         public const float PLAYER_RESPAWN_TIME = 4.0f;
 
         public const int PLAYER_MAX_LIVES = 3;

@@ -2782,7 +2782,8 @@ namespace Photon.Pun
         /// <returns>Nothing. Check error debug log for any issues.</returns>
         public static void Destroy(GameObject targetGo)
         {
-            RemoveInstantiatedGO(targetGo, !InRoom);
+            //RemoveInstantiatedGO(targetGo, !InRoom);
+            RemoveInstantiatedGO(targetGo, InRoom);
         }
 
         /// <summary>

@@ -282,7 +282,7 @@ ParticleSystem:
         m_RotationOrder: 0
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -335,7 +335,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -4976,8 +4976,7 @@ MonoBehaviour:
   Destruction: {fileID: 19801310}
   EngineTrail: {fileID: 185348}
   BulletPrefab: {fileID: 152888, guid: 5624ee9da9d10514ea7b808e83979c85, type: 3}
-  BombPrefab: {fileID: 0}
-  BombParticles: {fileID: 0}
+  photonView: {fileID: 0}
 --- !u!136 &13675448
 CapsuleCollider:
   m_ObjectHideFlags: 0

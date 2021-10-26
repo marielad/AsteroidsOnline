@@ -53,6 +53,8 @@ namespace Photon.Pun.Demo.Asteroids
 
             if (Mathf.Abs(transform.position.x) > Camera.main.orthographicSize * Camera.main.aspect || Mathf.Abs(transform.position.z) > Camera.main.orthographicSize)
             {
+                //Debug.Log("Tamaño de la cámara: "+Camera.main.orthographicSize);
+                //Debug.Log("Tamaño de la cámara por el aspecto: "+Camera.main.orthographicSize * Camera.main.aspect);
                 // Out of the screen
                 PhotonNetwork.Destroy(gameObject);
             }
@@ -91,7 +93,7 @@ namespace Photon.Pun.Demo.Asteroids
 
         #endregion
 
-        private void DestroyAsteroidGlobally()
+        public void DestroyAsteroidGlobally()
         {
             isDestroyed = true;
 
